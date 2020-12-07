@@ -15,19 +15,23 @@ func Login(c *gin.Context) {
 		Login:    c.PostForm("username"),
 		Password: c.PostForm("password"),
 	}
+	cacheUser.RLock()
 	for k, v := range cacheUser.Users {
-		if k == person.Login {
+		if k != person.Login {
+			c.JSON(404, "Пользователь не существует")
+			cacheUser.RUnlock()
+			return
+		} else {
 			if v != person {
 				c.JSON(400, "Неверный логин, или пароль")
+				cacheUser.RUnlock()
 				return
 			} else {
 				c.JSON(200, fmt.Sprintf("Добро пожаловать %v", person.Login))
 			}
-		} else {
-			c.JSON(404, "Пользователь не существует")
-			return
 		}
 	}
+	cacheUser.RUnlock()
 }
 
 func main() {
