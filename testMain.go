@@ -34,7 +34,6 @@ func main() {
 	r.POST("/login", Login)
 	r.GET("/ws", handleConnections)
 	go handleMessages()
-	log.Println("http server started on :8000")
 	err := r.Run()
 	if err != nil {
 		panic(err.Error())
